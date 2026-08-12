@@ -1,5 +1,5 @@
-use hdmaster::serialization::save_node;
-use hdmaster::{Algorithm, ChildIndex, DerivationPath, MasterSeed, NodeDeriver};
+use rust_hdmaster::serialization::save_node;
+use rust_hdmaster::{Algorithm, ChildIndex, DerivationPath, MasterSeed, NodeDeriver};
 use std::{path::PathBuf, str::FromStr};
 #[test]
 fn memory_and_file_are_same() {
