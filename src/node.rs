@@ -20,7 +20,7 @@ pub struct HdNode {
     #[zeroize(skip)]
     pub child_index: u32,
     pub chain_code: [u8; 32],
-    pub private_key: Vec<u8>,
+    pub private_key: [u8; 32],
     pub public_key: Vec<u8>,
 }
 impl std::fmt::Debug for HdNode {
@@ -44,7 +44,7 @@ impl HdNode {
     pub fn key_material(&self) -> KeyMaterial {
         KeyMaterial {
             algorithm: self.algorithm,
-            private_key: self.private_key.clone(),
+            private_key: self.private_key.to_vec(),
             public_key: self.public_key.clone(),
         }
     }

@@ -67,8 +67,13 @@ fn ppub(k: &[u8]) -> Result<Vec<u8>> {
 }
 
 fn spub(k: &[u8]) -> Result<Vec<u8>> {
+    let key: [u8; 32] = k
+        .try_into()
+        .map_err(|_| HdError::InvalidPrivateKey)?;
+
+
     let s = secp256k1::Secp256k1::new();
-    let sk = secp256k1::SecretKey::from_slice(k).map_err(|_| HdError::InvalidPrivateKey)?;
+    let sk = secp256k1::SecretKey::from_byte_array(key).map_err(|_| HdError::InvalidPrivateKey)?;
     Ok(secp256k1::PublicKey::from_secret_key(&s, &sk)
         .serialize()
         .to_vec())
@@ -87,8 +92,11 @@ impl Provider for Secp {
     }
     fn master(&self, a: &str, seed: &[u8]) -> Result<HdNode> {
         let i = mac(b"Bitcoin seed", seed)?;
+        let key_bytes: [u8; 32] = i[..32]
+            .try_into()
+            .map_err(|_| HdError::InvalidPrivateKey)?;
         let sk =
-            secp256k1::SecretKey::from_slice(&i[..32]).map_err(|_| HdError::InvalidPrivateKey)?;
+            secp256k1::SecretKey::from_byte_array(key_bytes).map_err(|_| HdError::InvalidPrivateKey)?;
         Ok(HdNode {
             application: a.into(),
             algorithm: Algorithm::Secp256k1,
@@ -96,13 +104,13 @@ impl Provider for Secp {
             depth: 0,
             child_index: 0,
             chain_code: i[32..].try_into().unwrap(),
-            private_key: sk.secret_bytes().to_vec(),
+            private_key: sk.secret_bytes(),
             public_key: spub(&sk.secret_bytes())?,
         })
     }
     fn child(&self, p: &HdNode, x: ChildIndex) -> Result<HdNode> {
         let secp = secp256k1::Secp256k1::new();
-        let parent = secp256k1::SecretKey::from_slice(&p.private_key)
+        let parent = secp256k1::SecretKey::from_byte_array(p.private_key)
             .map_err(|_| HdError::InvalidPrivateKey)?;
         let mut d = Vec::new();
         if x.is_hardened() {
@@ -125,7 +133,7 @@ impl Provider for Secp {
             depth: p.depth + 1,
             child_index: x.raw(),
             chain_code: i[32..].try_into().unwrap(),
-            private_key: sk.secret_bytes().to_vec(),
+            private_key: sk.secret_bytes(),
             public_key: secp256k1::PublicKey::from_secret_key(&secp, &sk)
                 .serialize()
                 .to_vec(),
@@ -153,7 +161,7 @@ impl Provider for Ed25519 {
             depth: 0,
             child_index: 0,
             chain_code: i[32..].try_into().unwrap(),
-            private_key: i[..32].to_vec(),
+            private_key: i[..32].try_into().map_err(|_| HdError::InvalidPrivateKey)?,
             public_key: edpub(&i[..32])?,
         })
     }
@@ -172,7 +180,7 @@ impl Provider for Ed25519 {
             depth: p.depth + 1,
             child_index: x.raw(),
             chain_code: i[32..].try_into().unwrap(),
-            private_key: i[..32].to_vec(),
+            private_key: i[..32].try_into().map_err(|_| HdError::InvalidPrivateKey)?,
             public_key: edpub(&i[..32])?,
         })
     }
@@ -199,7 +207,7 @@ impl Provider for P256 {
             depth: 0,
             child_index: 0,
             chain_code: i[32..].try_into().unwrap(),
-            private_key: sk.to_bytes().to_vec(),
+            private_key: sk.to_bytes().into(),
             public_key: ppub(&sk.to_bytes())?,
         })
     }
@@ -219,7 +227,7 @@ impl Provider for P256 {
             depth: p.depth + 1,
             child_index: x.raw(),
             chain_code: i[32..].try_into().unwrap(),
-            private_key: sk.to_bytes().to_vec(),
+            private_key: sk.to_bytes().into(),
             public_key: ppub(&sk.to_bytes())?,
         })
     }
