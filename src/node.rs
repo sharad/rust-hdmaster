@@ -11,9 +11,13 @@ pub enum DerivationScheme {
 #[derive(Clone, Serialize, Deserialize, Zeroize, ZeroizeOnDrop)]
 pub struct HdNode {
     pub application: String,
+    #[zeroize(skip)]
     pub algorithm: Algorithm,
+    #[zeroize(skip)]
     pub scheme: DerivationScheme,
+    #[zeroize(skip)]
     pub depth: u32,
+    #[zeroize(skip)]
     pub child_index: u32,
     pub chain_code: [u8; 32],
     pub private_key: Vec<u8>,

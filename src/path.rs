@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
 const HARDENED: u32 = 1 << 31;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct ChildIndex(pub u32);
 impl ChildIndex {
     pub fn normal(n: u32) -> Result<Self> {
@@ -45,6 +45,16 @@ impl FromStr for ChildIndex {
         }
     }
 }
+
+impl fmt::Display for ChildIndex {
+    // fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    //     write!(f, "{}", self.0)
+    // }
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DerivationPath(pub Vec<ChildIndex>);
 impl FromStr for DerivationPath {

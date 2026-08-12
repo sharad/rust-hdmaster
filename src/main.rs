@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
-use hdmaster::serialization::{save_node, write_private_pem, write_public_pem};
-use hdmaster::{Algorithm, DerivationPath, MasterSeed, NodeDeriver};
+use rust_hdmaster::serialization::{save_node, write_private_pem, write_public_pem};
+use rust_hdmaster::{Algorithm, DerivationPath, MasterSeed, NodeDeriver};
 use std::{path::PathBuf, str::FromStr};
 
 #[derive(Parser)]
@@ -54,7 +54,7 @@ enum Command {
         output: Option<PathBuf>,
     },
 }
-fn output(n: &hdmaster::HdNode, o: Option<PathBuf>) -> Result<()> {
+fn emit_output(n: &rust_hdmaster::HdNode, o: Option<PathBuf>) -> Result<()> {
     if let Some(d) = o {
         std::fs::create_dir_all(&d)?;
         save_node(n, &d.join("node.json"))?;
@@ -83,7 +83,8 @@ fn main() -> Result<()> {
             use bip39::{Language, Mnemonic};
             let m = Mnemonic::generate_in(Language::English, 24)?;
             println!("mnemonic: {m}");
-            MasterSeed::from_mnemonic(m.as_str(), &passphrase)?
+            let phrase = m.to_string();
+            MasterSeed::from_mnemonic(&phrase, &passphrase)?
                 .write_file(std::path::Path::new("master.seed"))?
         }
         Command::DeriveSeed {
@@ -99,7 +100,7 @@ fn main() -> Result<()> {
                 &application,
                 &DerivationPath::from_str(&path)?,
             )?;
-            output(&n, output)?
+            emit_output(&n, output)?
         }
         Command::DeriveHex {
             seed_hex,
@@ -114,7 +115,7 @@ fn main() -> Result<()> {
                 &application,
                 &DerivationPath::from_str(&path)?,
             )?;
-            output(&n, output)?
+            emit_output(&n, output)?
         }
         Command::Child {
             parent_node,
@@ -123,7 +124,7 @@ fn main() -> Result<()> {
         } => {
             let n =
                 d.derive_child_from_node_file(&parent_node, &DerivationPath::from_str(&path)?)?;
-            output(&n, output)?
+            emit_output(&n, output)?
         }
     }
     Ok(())

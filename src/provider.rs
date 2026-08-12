@@ -1,3 +1,7 @@
+
+
+
+
 use crate::{
     algorithm::Algorithm,
     error::{HdError, Result},
@@ -15,9 +19,11 @@ pub trait Provider: Send + Sync {
     fn master(&self, application: &str, seed: &[u8]) -> Result<HdNode>;
     fn child(&self, parent: &HdNode, index: ChildIndex) -> Result<HdNode>;
 }
+
 pub struct ProviderRegistry {
     providers: Vec<Box<dyn Provider>>,
 }
+
 impl ProviderRegistry {
     pub fn standard() -> Self {
         Self {
@@ -32,28 +38,34 @@ impl ProviderRegistry {
             .ok_or_else(|| HdError::UnsupportedAlgorithm(format!("{a:?}")))
     }
 }
+
 pub fn derive_child(p: &HdNode, i: ChildIndex) -> Result<HdNode> {
     ProviderRegistry::standard().get(p.algorithm)?.child(p, i)
 }
+
 fn mac(k: &[u8], d: &[u8]) -> Result<[u8; 64]> {
     let mut m = HmacSha512::new_from_slice(k).map_err(|e| HdError::Crypto(e.to_string()))?;
     m.update(d);
     let o = m.finalize().into_bytes();
     Ok(o.into())
 }
+
 fn edpub(k: &[u8]) -> Result<Vec<u8>> {
-    use ed25519_dalek::{SigningKey, Verifier};
+    // use ed25519_dalek::{SigningKey, Verifier};
+    use ed25519_dalek::SigningKey;
     let a: [u8; 32] = k.try_into().map_err(|_| HdError::InvalidPrivateKey)?;
     Ok(SigningKey::from_bytes(&a)
         .verifying_key()
         .to_bytes()
         .to_vec())
 }
+
 fn ppub(k: &[u8]) -> Result<Vec<u8>> {
     use p256::{elliptic_curve::sec1::ToEncodedPoint, SecretKey};
     let s = SecretKey::from_slice(k).map_err(|_| HdError::InvalidPrivateKey)?;
     Ok(s.public_key().to_encoded_point(false).as_bytes().to_vec())
 }
+
 fn spub(k: &[u8]) -> Result<Vec<u8>> {
     let s = secp256k1::Secp256k1::new();
     let sk = secp256k1::SecretKey::from_slice(k).map_err(|_| HdError::InvalidPrivateKey)?;
