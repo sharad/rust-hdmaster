@@ -1,0 +1,23 @@
+use serde::{Deserialize, Serialize};
+use zeroize::{Zeroize, ZeroizeOnDrop};
+use crate::{algorithm::Algorithm, error::Result, key::KeyMaterial, path::ChildIndex};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum DerivationScheme { Bip32, Slip10 }
+
+#[derive(Clone, Serialize, Deserialize, Zeroize, ZeroizeOnDrop)]
+pub struct HdNode {
+    pub application: String,
+    pub algorithm: Algorithm,
+    pub scheme: DerivationScheme,
+    pub depth: u32,
+    pub child_index: u32,
+    pub chain_code: [u8; 32],
+    pub private_key: Vec<u8>,
+    pub public_key: Vec<u8>,
+}
+impl std::fmt::Debug for HdNode { fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { f.debug_struct("HdNode").field("application", &self.application).field("algorithm", &self.algorithm).field("scheme", &self.scheme).field("depth", &self.depth).field("child_index", &self.child_index).field("private_key", &"<secret>").field("chain_code", &"<secret>").field("public_key", &hex::encode(&self.public_key)).finish() } }
+impl HdNode {
+    pub fn child(&self, index: ChildIndex) -> Result<Self> { crate::provider::derive_child(self, index) }
+    pub fn key_material(&self) -> KeyMaterial { KeyMaterial { algorithm: self.algorithm, private_key: self.private_key.clone(), public_key: self.public_key.clone() } }
+}
