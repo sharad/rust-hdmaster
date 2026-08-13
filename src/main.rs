@@ -6,7 +6,9 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use rust_hdmaster::serialization::{save_node, write_private_pem, write_public_pem};
-use rust_hdmaster::{Algorithm, DerivationPath, MasterSeed, NodeDeriver};
+use rust_hdmaster::{DerivationPath, MasterSeed, NodeDeriver};
+use rust_hdmaster::provider;
+// use rust_hdmaster::provider::{Algorithm, };
 // use rust_hdmaster::{DerivationScheme, HdNode};
 use std::{path::PathBuf, str::FromStr};
 
@@ -74,8 +76,8 @@ fn emit_output(n: &rust_hdmaster::HdNode, o: Option<PathBuf>) -> Result<()> {
     } else {
         println!(
             "algorithm={:?} scheme={:?} depth={} child={} public={} private=<hidden>",
-            n.algorithm,
-            n.scheme,
+            n.provider.algorithm,
+            n.provider.scheme,
             n.depth,
             n.child_index,
             hex::encode(&n.public_key)
@@ -107,8 +109,8 @@ fn main() -> Result<()> {
         } => {
             let n = d.derive_from_seed(
                 &MasterSeed::read_file(&seed_file)?,
-                Algorithm::from_str(&algorithm)?,
-                rust_hdmaster::DerivationScheme::from_str(&scheme)?,
+                provider::Algorithm::from_str(&algorithm)?,
+                provider::DerivationScheme::from_str(&scheme)?,
                 &application,
                 &DerivationPath::from_str(&path)?,
             )?;
@@ -124,8 +126,8 @@ fn main() -> Result<()> {
         } => {
             let n = d.derive_from_seed(
                 &MasterSeed::from_hex(&seed_hex)?,
-                Algorithm::from_str(&algorithm)?,
-                rust_hdmaster::DerivationScheme::from_str(&scheme)?,
+                provider::Algorithm::from_str(&algorithm)?,
+                provider::DerivationScheme::from_str(&scheme)?,
                 &application,
                 &DerivationPath::from_str(&path)?,
             )?;

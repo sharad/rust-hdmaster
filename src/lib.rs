@@ -2,7 +2,6 @@
 
 
 
-pub mod algorithm;
 pub mod derivation;
 pub mod error;
 pub mod key;
@@ -12,10 +11,9 @@ pub mod provider;
 pub mod seed;
 pub mod serialization;
 
-pub use algorithm::Algorithm;
 pub use derivation::NodeDeriver;
 pub use error::{HdError, Result};
-pub use node::{DerivationScheme, HdNode};
+pub use node::HdNode;
 pub use path::{ChildIndex, DerivationPath};
-pub use provider::{Provider, ProviderRegistry};
+pub use provider::{Provider, ProviderId, ProviderRegistry};
 pub use seed::MasterSeed;

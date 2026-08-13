@@ -6,14 +6,16 @@
 
 
 use crate::{
-    algorithm::Algorithm,
+    provider::Algorithm,
+    provider::DerivationScheme,
+    provider::ProviderId,
     error::{HdError, Result},
-    node::{DerivationScheme, HdNode},
+    node::HdNode,
     path::ChildIndex,
 };
 use std::path::Path;
 
-use crate::provider::{hmac_sha512, Provider};
+use crate::provider::{hmac_sha512, Provider, VARIANT_STANDARD};
 
 
 
@@ -34,21 +36,21 @@ impl Ed25519 {
     }
 }
 impl Provider for Ed25519 {
-    fn algorithm(&self) -> Algorithm {
-        Algorithm::Ed25519
+    fn id(&self) -> ProviderId {
+        ProviderId {
+            algorithm: Algorithm::Ed25519,
+            scheme: DerivationScheme::Slip10,
+            variant: VARIANT_STANDARD.into(),
+        }
     }
-    fn scheme(&self) -> DerivationScheme {
-        DerivationScheme::Slip10
-    }
-    fn supports_non_hardened(&self) -> bool {
+   fn supports_non_hardened(&self) -> bool {
         false
     }
     fn master(&self, a: &str, seed: &[u8]) -> Result<HdNode> {
         let i = hmac_sha512(b"ed25519 seed", seed)?;
         Ok(HdNode {
             application: a.into(),
-            algorithm: Algorithm::Ed25519,
-            scheme: DerivationScheme::Slip10,
+            provider: self.id(),
             depth: 0,
             child_index: 0,
             chain_code: i[32..].try_into().unwrap(),
@@ -66,8 +68,7 @@ impl Provider for Ed25519 {
         let i = hmac_sha512(&p.chain_code, &d)?;
         Ok(HdNode {
             application: p.application.clone(),
-            algorithm: p.algorithm,
-            scheme: p.scheme,
+            provider: self.id(),
             depth: p.depth + 1,
             child_index: x.raw(),
             chain_code: i[32..].try_into().unwrap(),

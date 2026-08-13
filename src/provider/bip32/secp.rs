@@ -3,13 +3,15 @@
 
 
 use crate::{
-    algorithm::Algorithm,
+    provider::Algorithm,
+    provider::DerivationScheme,
+    provider::ProviderId,
     error::{HdError, Result},
-    node::{DerivationScheme, HdNode},
+    node::HdNode,
     path::ChildIndex,
 };
 
-use crate::provider::{hmac_sha512, Provider};
+use crate::provider::{hmac_sha512, Provider, VARIANT_STANDARD};
 
 use std::path::Path;
 
@@ -18,6 +20,8 @@ use std::path::Path;
 // use std::path::Path;
 // type HmacSha512 = Hmac<Sha512>;
 
+
+// Secp256k1
 
 pub(crate) struct Secp;
 impl Secp {
@@ -40,11 +44,12 @@ impl Secp {
 }
 
 impl Provider for Secp {
-    fn algorithm(&self) -> Algorithm {
-        Algorithm::Secp256k1
-    }
-    fn scheme(&self) -> DerivationScheme {
-        DerivationScheme::Bip32
+    fn id(&self) -> ProviderId {
+        ProviderId {
+            algorithm: Algorithm::Secp256k1,
+            scheme: DerivationScheme::Bip32,
+            variant: VARIANT_STANDARD.into(),
+        }
     }
     fn supports_non_hardened(&self) -> bool {
         true
@@ -59,8 +64,7 @@ impl Provider for Secp {
             secp256k1::SecretKey::from_byte_array(key_bytes).map_err(|_| HdError::InvalidPrivateKey)?;
         Ok(HdNode {
             application: a.into(),
-            algorithm: Algorithm::Secp256k1,
-            scheme: DerivationScheme::Bip32,
+            provider: self.id(),
             depth: 0,
             child_index: 0,
             chain_code: i[32..].try_into().unwrap(),
@@ -88,8 +92,7 @@ impl Provider for Secp {
             .map_err(|_| HdError::InvalidPrivateKey)?;
         Ok(HdNode {
             application: p.application.clone(),
-            algorithm: p.algorithm,
-            scheme: p.scheme,
+            provider: self.id(),
             depth: p.depth + 1,
             child_index: x.raw(),
             chain_code: i[32..].try_into().unwrap(),

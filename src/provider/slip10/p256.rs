@@ -1,14 +1,16 @@
 
 use crate::{
-    algorithm::Algorithm,
+    provider::Algorithm,
+    provider::DerivationScheme,
+    provider::ProviderId,
     error::{HdError, Result},
-    node::{DerivationScheme, HdNode},
+    node::HdNode,
     path::ChildIndex,
 };
 use std::path::Path;
 
 
-use crate::provider::{hmac_sha512, Provider};
+use crate::provider::{hmac_sha512, Provider, VARIANT_STANDARD};
 
 
 
@@ -32,11 +34,12 @@ impl P256 {
     }
 }
 impl Provider for P256 {
-    fn algorithm(&self) -> Algorithm {
-        Algorithm::P256
-    }
-    fn scheme(&self) -> DerivationScheme {
-        DerivationScheme::Slip10
+    fn id(&self) -> ProviderId {
+        ProviderId {
+            algorithm: Algorithm::P256,
+            scheme: DerivationScheme::Slip10,
+            variant: VARIANT_STANDARD.into(),
+        }
     }
     fn supports_non_hardened(&self) -> bool {
         false
@@ -46,8 +49,7 @@ impl Provider for P256 {
         let sk = p256::SecretKey::from_slice(&i[..32]).map_err(|_| HdError::InvalidPrivateKey)?;
         Ok(HdNode {
             application: a.into(),
-            algorithm: Algorithm::P256,
-            scheme: DerivationScheme::Slip10,
+            provider: self.id(),
             depth: 0,
             child_index: 0,
             chain_code: i[32..].try_into().unwrap(),
@@ -66,8 +68,7 @@ impl Provider for P256 {
         let sk = p256::SecretKey::from_slice(&i[..32]).map_err(|_| HdError::InvalidPrivateKey)?;
         Ok(HdNode {
             application: p.application.clone(),
-            algorithm: p.algorithm,
-            scheme: p.scheme,
+            provider: self.id(),
             depth: p.depth + 1,
             child_index: x.raw(),
             chain_code: i[32..].try_into().unwrap(),

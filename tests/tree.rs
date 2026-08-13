@@ -1,5 +1,8 @@
 use rust_hdmaster::serialization::save_node;
-use rust_hdmaster::{Algorithm, ChildIndex, DerivationPath, MasterSeed, NodeDeriver};
+use rust_hdmaster::{ChildIndex, DerivationPath, MasterSeed, NodeDeriver};
+
+use rust_hdmaster::provider;
+
 use std::{path::PathBuf, str::FromStr};
 #[test]
 fn memory_and_file_are_same() {
@@ -8,8 +11,8 @@ fn memory_and_file_are_same() {
     let p = d
         .derive_from_seed(
             &s,
-            Algorithm::Secp256k1,
-            rust_hdmaster::DerivationScheme::Bip32,
+            provider::Algorithm::Secp256k1,
+            provider::DerivationScheme::Bip32,
             "crypto",
             &DerivationPath::from_str("44'/0'/0'").unwrap(),
         )
@@ -33,8 +36,8 @@ fn secp_supports_non_hardened() {
     let n = d
         .derive_from_seed(
             &s,
-            Algorithm::Secp256k1,
-            rust_hdmaster::DerivationScheme::Bip32,
+            provider::Algorithm::Secp256k1,
+            provider::DerivationScheme::Bip32,
             "ssh",
             &DerivationPath::from_str("0'").unwrap(),
         )
@@ -50,8 +53,8 @@ fn deep_mixed_path() {
     let n = d
         .derive_from_seed(
             &s,
-            Algorithm::Secp256k1,
-            rust_hdmaster::DerivationScheme::Bip32,
+            provider::Algorithm::Secp256k1,
+            provider::DerivationScheme::Bip32,
             "crypto",
             &DerivationPath::from_str("44'/0'/0'/0/0/1/2'/3").unwrap(),
         )
@@ -65,8 +68,8 @@ fn ed25519_rejects_non_hardened() {
     assert!(d
         .derive_from_seed(
             &s,
-            Algorithm::Ed25519,
-            rust_hdmaster::DerivationScheme::Slip10,
+            provider::Algorithm::Ed25519,
+            provider::DerivationScheme::Slip10,
             "ssh",
             &DerivationPath::from_str("0/1'").unwrap()
         )

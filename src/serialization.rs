@@ -18,13 +18,13 @@ pub fn load_node(p: &Path) -> Result<HdNode> {
 
 pub fn write_private_pem(n: &HdNode, p: &Path) -> Result<()> {
     ProviderRegistry::standard()
-        .get(n.algorithm, n.scheme)?
+        .get(n.provider.algorithm, n.provider.scheme)?
         .write_private(n, p)
 }
 
 pub fn write_public_pem(n: &HdNode, p: &Path) -> Result<()> {
     ProviderRegistry::standard()
-        .get(n.algorithm, n.scheme)?
+        .get(n.provider.algorithm, n.provider.scheme)?
         .write_public(n, p)
 }
 

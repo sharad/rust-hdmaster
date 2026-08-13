@@ -1,6 +1,6 @@
 
 
-use crate::Algorithm;
+use crate::ProviderId;
 use serde::{Deserialize, Serialize};
 
 
@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct KeyMaterial {
-    pub algorithm: Algorithm,
+    pub provider: ProviderId,
     // pub private_key: [u8; 32],
     pub private_key: Vec<u8>,
     pub public_key: Vec<u8>,
@@ -19,7 +19,7 @@ pub struct KeyMaterial {
 impl std::fmt::Debug for KeyMaterial {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("KeyMaterial")
-            .field("algorithm", &self.algorithm)
+            .field("algorithm", &self.provider.algorithm)
             .field("private_key", &"<secret>")
             .field("public_key", &hex::encode(&self.public_key))
             .finish()

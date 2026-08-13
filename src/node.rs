@@ -3,10 +3,7 @@
 
 
 
-use crate::{algorithm::Algorithm, error::Result, error::HdError, key::KeyMaterial, path::ChildIndex};
-// use crate::error::{HdError, Result};
-// use serde::{Deserialize, Serialize};
-use std::str::FromStr;
+use crate::{provider::ProviderId, error::Result, key::KeyMaterial, path::ChildIndex};
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
@@ -14,22 +11,6 @@ use zeroize::{Zeroize, ZeroizeOnDrop};
 
 
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-pub enum DerivationScheme {
-    Bip32,
-    Slip10,
-}
-
-impl FromStr for DerivationScheme {
-    type Err = HdError;
-    fn from_str(s: &str) -> Result<Self> {
-        match s.to_ascii_lowercase().as_str() {
-            "bip32" => Ok(Self::Bip32),
-            "slip10" => Ok(Self::Slip10),
-            _ => Err(HdError::UnsupportedDerivationScheme(s.into())),
-        }
-    }
-}
 
 
 
@@ -37,9 +18,7 @@ impl FromStr for DerivationScheme {
 pub struct HdNode {
     pub application: String,
     #[zeroize(skip)]
-    pub algorithm: Algorithm,
-    #[zeroize(skip)]
-    pub scheme: DerivationScheme,
+    pub provider: ProviderId,
     #[zeroize(skip)]
     pub depth: u32,
     #[zeroize(skip)]
@@ -53,8 +32,8 @@ impl std::fmt::Debug for HdNode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HdNode")
             .field("application", &self.application)
-            .field("algorithm", &self.algorithm)
-            .field("scheme", &self.scheme)
+            .field("algorithm", &self.provider.algorithm)
+            .field("scheme", &self.provider.scheme)
             .field("depth", &self.depth)
             .field("child_index", &self.child_index)
             .field("private_key", &"<secret>")
@@ -72,7 +51,7 @@ impl HdNode {
 
     pub fn key_material(&self) -> KeyMaterial {
         KeyMaterial {
-            algorithm: self.algorithm,
+            provider: self.provider.clone(),
             private_key: self.private_key.to_vec(),
             public_key: self.public_key.clone(),
         }
