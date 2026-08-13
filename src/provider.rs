@@ -63,41 +63,6 @@ fn hmac_sha512(k: &[u8], d: &[u8]) -> Result<[u8; 64]> {
     let o = m.finalize().into_bytes();
     Ok(o.into())
 }
-// fn mac(k: &[u8], d: &[u8]) -> Result<[u8; 64]> {
-//     let mut m = HmacSha512::new_from_slice(k).map_err(|e| HdError::Crypto(e.to_string()))?;
-//     m.update(d);
-//     let o = m.finalize().into_bytes();
-//     Ok(o.into())
-// }
-
-// fn edpub(k: &[u8]) -> Result<Vec<u8>> {
-//     // use ed25519_dalek::{SigningKey, Verifier};
-//     use ed25519_dalek::SigningKey;
-//     let a: [u8; 32] = k.try_into().map_err(|_| HdError::InvalidPrivateKey)?;
-//     Ok(SigningKey::from_bytes(&a)
-//         .verifying_key()
-//         .to_bytes()
-//         .to_vec())
-// }
-
-// fn ppub(k: &[u8]) -> Result<Vec<u8>> {
-//     use p256::{elliptic_curve::sec1::ToEncodedPoint, SecretKey};
-//     let s = SecretKey::from_slice(k).map_err(|_| HdError::InvalidPrivateKey)?;
-//     Ok(s.public_key().to_encoded_point(false).as_bytes().to_vec())
-// }
-
-// fn spub(k: &[u8]) -> Result<Vec<u8>> {
-//     let key: [u8; 32] = k
-//         .try_into()
-//         .map_err(|_| HdError::InvalidPrivateKey)?;
-
-
-//     let s = secp256k1::Secp256k1::new();
-//     let sk = secp256k1::SecretKey::from_byte_array(key).map_err(|_| HdError::InvalidPrivateKey)?;
-//     Ok(secp256k1::PublicKey::from_secret_key(&s, &sk)
-//         .serialize()
-//         .to_vec())
-// }
 
 struct Secp;
 impl Secp {
