@@ -62,6 +62,11 @@ impl Provider for Secp {
             .map_err(|_| HdError::InvalidPrivateKey)?;
         let sk =
             secp256k1::SecretKey::from_byte_array(key_bytes).map_err(|_| HdError::InvalidPrivateKey)?;
+
+        // code for random key generation (not used here, but kept for reference)
+        // let mut rng = secp256k1::rand::thread_rng();
+        // let sk = secp256k1::SecretKey::new(&mut rng);
+
         Ok(HdNode {
             application: a.into(),
             provider: self.id(),

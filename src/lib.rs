@@ -1,19 +1,28 @@
 
 
 
-
-pub mod derivation;
-pub mod error;
-pub mod key;
-pub mod node;
-pub mod path;
+pub mod core;
 pub mod provider;
-pub mod seed;
-pub mod serialization;
+pub mod serialize;
+pub mod fuse;
 
-pub use derivation::NodeDeriver;
-pub use error::{HdError, Result};
-pub use node::HdNode;
-pub use path::{ChildIndex, DerivationPath};
-pub use provider::{Provider, ProviderId, ProviderRegistry};
-pub use seed::MasterSeed;
+
+
+// Re-export commonly used core types
+pub use core::{
+    ChildIndex,
+    DerivationPath,
+    HdError,
+    HdNode,
+    MasterSeed,
+    NodeDeriver,
+    Result,
+};
+
+// Provider API
+pub use provider::{
+    Provider,
+    ProviderId,
+    ProviderRegistry,
+};
+

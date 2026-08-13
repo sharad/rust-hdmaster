@@ -24,3 +24,13 @@ sha2 = "0.10"
 tempfile = "3"
 thiserror = "2"
 zeroize = { version = "1", features = ["derive"] }
+
+fuser = "0.18"
+tokio = { version = "1", features = [
+    "rt-multi-thread",
+    "macros",
+    "fs",
+    "sync",
+] }
+async-trait = "0.1"
+libc = "0.2"
