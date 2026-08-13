@@ -1,7 +1,7 @@
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use rust_hdmaster::provider;
-use rust_hdmaster::serialization::{save_node, write_private_pem, write_public_pem};
+use rust_hdmaster::serialize::{save_node, write_private_pem, write_public_pem};
 use rust_hdmaster::{DerivationPath, MasterSeed, NodeDeriver};
 // use rust_hdmaster::provider::{Algorithm, };
 // use rust_hdmaster::{DerivationScheme, HdNode};
