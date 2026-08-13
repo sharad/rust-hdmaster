@@ -1,7 +1,13 @@
+
+
+
+
+
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use rust_hdmaster::serialization::{save_node, write_private_pem, write_public_pem};
 use rust_hdmaster::{Algorithm, DerivationPath, MasterSeed, NodeDeriver};
+// use rust_hdmaster::{DerivationScheme, HdNode};
 use std::{path::PathBuf, str::FromStr};
 
 #[derive(Parser)]
@@ -29,6 +35,8 @@ enum Command {
         #[arg(long)]
         algorithm: String,
         #[arg(long)]
+        scheme: String,
+        #[arg(long)]
         path: String,
         #[arg(long)]
         output: Option<PathBuf>,
@@ -40,6 +48,8 @@ enum Command {
         application: String,
         #[arg(long)]
         algorithm: String,
+        #[arg(long)]
+        scheme: String,
         #[arg(long)]
         path: String,
         #[arg(long)]
@@ -91,12 +101,14 @@ fn main() -> Result<()> {
             seed_file,
             application,
             algorithm,
+            scheme,
             path,
             output,
         } => {
             let n = d.derive_from_seed(
                 &MasterSeed::read_file(&seed_file)?,
                 Algorithm::from_str(&algorithm)?,
+                rust_hdmaster::DerivationScheme::from_str(&scheme)?,
                 &application,
                 &DerivationPath::from_str(&path)?,
             )?;
@@ -106,12 +118,14 @@ fn main() -> Result<()> {
             seed_hex,
             application,
             algorithm,
+            scheme,
             path,
             output,
         } => {
             let n = d.derive_from_seed(
                 &MasterSeed::from_hex(&seed_hex)?,
                 Algorithm::from_str(&algorithm)?,
+                rust_hdmaster::DerivationScheme::from_str(&scheme)?,
                 &application,
                 &DerivationPath::from_str(&path)?,
             )?;

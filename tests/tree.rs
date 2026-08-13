@@ -9,6 +9,7 @@ fn memory_and_file_are_same() {
         .derive_from_seed(
             &s,
             Algorithm::Secp256k1,
+            rust_hdmaster::DerivationScheme::Bip32,
             "crypto",
             &DerivationPath::from_str("44'/0'/0'").unwrap(),
         )
@@ -33,6 +34,7 @@ fn secp_supports_non_hardened() {
         .derive_from_seed(
             &s,
             Algorithm::Secp256k1,
+            rust_hdmaster::DerivationScheme::Bip32,
             "ssh",
             &DerivationPath::from_str("0'").unwrap(),
         )
@@ -49,6 +51,7 @@ fn deep_mixed_path() {
         .derive_from_seed(
             &s,
             Algorithm::Secp256k1,
+            rust_hdmaster::DerivationScheme::Bip32,
             "crypto",
             &DerivationPath::from_str("44'/0'/0'/0/0/1/2'/3").unwrap(),
         )
@@ -63,6 +66,7 @@ fn ed25519_rejects_non_hardened() {
         .derive_from_seed(
             &s,
             Algorithm::Ed25519,
+            rust_hdmaster::DerivationScheme::Slip10,
             "ssh",
             &DerivationPath::from_str("0/1'").unwrap()
         )

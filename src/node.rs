@@ -3,7 +3,10 @@
 
 
 
-use crate::{algorithm::Algorithm, error::Result, key::KeyMaterial, path::ChildIndex};
+use crate::{algorithm::Algorithm, error::Result, error::HdError, key::KeyMaterial, path::ChildIndex};
+// use crate::error::{HdError, Result};
+// use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
@@ -16,6 +19,19 @@ pub enum DerivationScheme {
     Bip32,
     Slip10,
 }
+
+impl FromStr for DerivationScheme {
+    type Err = HdError;
+    fn from_str(s: &str) -> Result<Self> {
+        match s.to_ascii_lowercase().as_str() {
+            "bip32" => Ok(Self::Bip32),
+            "slip10" => Ok(Self::Slip10),
+            _ => Err(HdError::UnsupportedDerivationScheme(s.into())),
+        }
+    }
+}
+
+
 
 #[derive(Clone, Serialize, Deserialize, Zeroize, ZeroizeOnDrop)]
 pub struct HdNode {

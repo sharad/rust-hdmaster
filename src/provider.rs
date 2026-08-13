@@ -35,17 +35,17 @@ impl ProviderRegistry {
             providers: vec![Box::new(Secp), Box::new(Ed25519), Box::new(P256)],
         }
     }
-    pub fn get(&self, a: Algorithm) -> Result<&dyn Provider> {
+    pub fn get(&self, algorithm: Algorithm, scheme: DerivationScheme,) -> Result<&dyn Provider> {
         self.providers
             .iter()
-            .find(|p| p.algorithm() == a)
+            .find(|p| p.algorithm() == algorithm && p.scheme() == scheme)
             .map(|p| p.as_ref())
-            .ok_or_else(|| HdError::UnsupportedAlgorithm(format!("{a:?}")))
+            .ok_or_else(|| HdError::UnsupportedAlgorithm(format!("{algorithm:?}")))
     }
 }
 
 pub fn derive_child(p: &HdNode, i: ChildIndex) -> Result<HdNode> {
-    ProviderRegistry::standard().get(p.algorithm)?.child(p, i)
+    ProviderRegistry::standard().get(p.algorithm, p.scheme)?.child(p, i)
 }
 
 fn mac(k: &[u8], d: &[u8]) -> Result<[u8; 64]> {
@@ -237,3 +237,5 @@ impl Provider for P256 {
         })
     }
 }
+
+

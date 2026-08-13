@@ -7,7 +7,7 @@
 use crate::{
     algorithm::Algorithm,
     error::Result,
-    node::HdNode,
+    node::{HdNode, DerivationScheme},
     path::{ChildIndex, DerivationPath},
     provider::ProviderRegistry,
     seed::MasterSeed,
@@ -44,10 +44,11 @@ impl NodeDeriver {
         &self,
         seed: &MasterSeed,
         algorithm: Algorithm,
+        scheme: DerivationScheme,
         application: &str,
         path: &DerivationPath,
     ) -> Result<HdNode> {
-        let p = self.registry.get(algorithm)?;
+        let p = self.registry.get(algorithm, scheme)?;
         let mut n = p.master(application, &seed.0)?;
         for i in &path.0 {
             n = p.child(&n, *i)?
@@ -56,7 +57,8 @@ impl NodeDeriver {
     }
 
     pub fn derive_child_from_node(&self, parent: &HdNode, path: &DerivationPath) -> Result<HdNode> {
-        let p = self.registry.get(parent.algorithm)?;
+        let p = self.registry.get(parent.algorithm,
+                                  parent.scheme)?;
         let mut n = parent.clone();
         for i in &path.0 {
             n = p.child(&n, *i)?

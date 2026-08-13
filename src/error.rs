@@ -10,6 +10,8 @@ pub enum HdError {
     NonHardenedUnsupported,
     #[error("unsupported algorithm: {0}")]
     UnsupportedAlgorithm(String),
+    #[error("unsupported scheme: {0}")]
+    UnsupportedDerivationScheme(String),
     #[error("invalid seed: {0}")]
     InvalidSeed(String),
     #[error("invalid private key")]
