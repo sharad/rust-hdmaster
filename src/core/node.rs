@@ -2,8 +2,8 @@
 
 
 
-
-use crate::{provider::ProviderId, error::Result, key::KeyMaterial, path::ChildIndex};
+use crate::provider::ProviderId;
+use crate::core::{error::Result, key::KeyMaterial, path::ChildIndex};
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
 

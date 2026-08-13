@@ -2,7 +2,7 @@
 
 
 
-use crate::error::{HdError, Result};
+use crate::core::error::{HdError, Result};
 use rand::RngCore;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 

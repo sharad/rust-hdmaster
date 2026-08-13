@@ -2,7 +2,7 @@
 
 
 
-use crate::error::{HdError, Result};
+use crate::core::error::{HdError, Result};
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
 const HARDENED: u32 = 1 << 31;

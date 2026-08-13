@@ -4,11 +4,9 @@
 // use std::path::Path;
 // type HmacSha512 = Hmac<Sha512>;
 
+use crate::provider::{Algorithm, DerivationScheme, ProviderId};
 
-use crate::{
-    provider::Algorithm,
-    provider::DerivationScheme,
-    provider::ProviderId,
+use crate::core::{
     error::{HdError, Result},
     node::HdNode,
     path::ChildIndex,

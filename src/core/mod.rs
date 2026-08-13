@@ -8,7 +8,6 @@ pub mod key;
 pub mod node;
 pub mod path;
 pub mod seed;
-pub mod serialization;
 
 pub use derivation::NodeDeriver;
 pub use error::{HdError, Result};

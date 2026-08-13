@@ -1,10 +1,10 @@
 
 
+use crate::provider::{Algorithm, DerivationScheme};
 
-use crate::{
+use crate::core::{
     error::{HdError, Result},
     node::HdNode,
-    provider::{Algorithm, DerivationScheme},
     path::ChildIndex,
 };
 

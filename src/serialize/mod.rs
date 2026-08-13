@@ -1,9 +1,10 @@
 
 
-use crate::{
+use crate::provider::ProviderRegistry;
+
+use crate::core::{
     error::Result,
     node::HdNode,
-    provider::ProviderRegistry,
 };
 use std::path::Path;
 

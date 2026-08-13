@@ -3,9 +3,9 @@
 
 
 pub mod backing;
-pub mod filesystem;
+pub mod fs;
 pub mod inode;
-pub mod virtual_file;
+pub mod vfs;
 
 pub use filesystem::HdFuse;
 
