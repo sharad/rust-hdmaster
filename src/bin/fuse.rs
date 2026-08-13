@@ -1,26 +1,56 @@
 
 
-use rust_hdmaster::fuse::{
-    backing::LocalBackingStore,
-    HdFuse,
+
+use std::{
+    env,
+    path::PathBuf,
 };
 
+use fuser::MountOption;
+use rust_hdmaster::fuse::{
+    HdFuse,
+    LocalBackingStore,
+    PlaceholderVirtualFileProvider,
+};
 
-
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    let runtime = tokio::runtime::Runtime::new()?;
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut args =
+        env::args_os().skip(1);
 
     let backing =
-        LocalBackingStore::new("/mnt/db/.hd-storage");
+        PathBuf::from(
+            args.next()
+                .expect("missing backing directory"),
+        );
+
+    let mountpoint =
+        PathBuf::from(
+            args.next()
+                .expect("missing mount point"),
+        );
+
+    let runtime =
+        tokio::runtime::Runtime::new()?;
 
     let filesystem =
-        HdFuse::new(backing, runtime);
+        HdFuse::new(
+            LocalBackingStore::new(backing),
+            PlaceholderVirtualFileProvider,
+            runtime,
+        );
 
-    // FUSE mount here.
+    fuser::mount2(
+        filesystem,
+        mountpoint,
+        &[
+            MountOption::FSName(
+                "hd-fuse".to_string(),
+            ),
+            MountOption::AutoUnmount,
+        ],
+    )?;
 
     Ok(())
 }
-
 
 

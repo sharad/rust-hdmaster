@@ -1,29 +1,51 @@
 
 
-
-
-
-
-
-
 use async_trait::async_trait;
 use std::path::{Path, PathBuf};
 use tokio::fs;
 
-use crate::error::{HdError, Result};
+use crate::core::{HdError, Result};
 
 #[async_trait]
 pub trait BackingStore: Send + Sync {
-    async fn metadata(&self, path: &Path) -> Result<std::fs::Metadata>;
+    async fn metadata(&self, path: &Path)
+        -> Result<std::fs::Metadata>;
 
-    async fn read(&self, path: &Path) -> Result<Vec<u8>>;
+    async fn read(&self, path: &Path)
+        -> Result<Vec<u8>>;
 
     async fn read_dir(&self, path: &Path)
-                      -> Result<Vec<std::fs::DirEntry>>;
+        -> Result<Vec<std::fs::DirEntry>>;
+
+    async fn write(
+        &self,
+        path: &Path,
+        data: &[u8],
+    ) -> Result<()>;
+
+    async fn create_dir(
+        &self,
+        path: &Path,
+    ) -> Result<()>;
+
+    async fn remove_file(
+        &self,
+        path: &Path,
+    ) -> Result<()>;
+
+    async fn remove_dir(
+        &self,
+        path: &Path,
+    ) -> Result<()>;
+
+    async fn rename(
+        &self,
+        old: &Path,
+        new: &Path,
+    ) -> Result<()>;
 
     fn real_path(&self, path: &Path) -> PathBuf;
 }
-
 
 pub struct LocalBackingStore {
     root: PathBuf,
@@ -44,11 +66,17 @@ impl LocalBackingStore {
 
 #[async_trait]
 impl BackingStore for LocalBackingStore {
-    async fn metadata(&self, path: &Path) -> Result<std::fs::Metadata> {
+    async fn metadata(
+        &self,
+        path: &Path,
+    ) -> Result<std::fs::Metadata> {
         Ok(fs::metadata(self.resolve(path)).await?)
     }
 
-    async fn read(&self, path: &Path) -> Result<Vec<u8>> {
+    async fn read(
+        &self,
+        path: &Path,
+    ) -> Result<Vec<u8>> {
         Ok(fs::read(self.resolve(path)).await?)
     }
 
@@ -68,10 +96,49 @@ impl BackingStore for LocalBackingStore {
         Ok(result)
     }
 
+    async fn write(
+        &self,
+        path: &Path,
+        data: &[u8],
+    ) -> Result<()> {
+        Ok(fs::write(self.resolve(path), data).await?)
+    }
+
+    async fn create_dir(
+        &self,
+        path: &Path,
+    ) -> Result<()> {
+        Ok(fs::create_dir(self.resolve(path)).await?)
+    }
+
+    async fn remove_file(
+        &self,
+        path: &Path,
+    ) -> Result<()> {
+        Ok(fs::remove_file(self.resolve(path)).await?)
+    }
+
+    async fn remove_dir(
+        &self,
+        path: &Path,
+    ) -> Result<()> {
+        Ok(fs::remove_dir(self.resolve(path)).await?)
+    }
+
+    async fn rename(
+        &self,
+        old: &Path,
+        new: &Path,
+    ) -> Result<()> {
+        Ok(fs::rename(
+            self.resolve(old),
+            self.resolve(new),
+        ).await?)
+    }
+
     fn real_path(&self, path: &Path) -> PathBuf {
         self.resolve(path)
     }
 }
-
 
 

@@ -6,9 +6,6 @@ pub mod provider;
 pub mod serialize;
 pub mod fuse;
 
-
-
-// Re-export commonly used core types
 pub use core::{
     ChildIndex,
     DerivationPath,
@@ -19,10 +16,10 @@ pub use core::{
     Result,
 };
 
-// Provider API
 pub use provider::{
     Provider,
     ProviderId,
     ProviderRegistry,
 };
+
 
