@@ -1,13 +1,25 @@
 
 
-use hmac::{Hmac, Mac};
-use sha2::Sha512;
+
+
+use crate::{
+    algorithm::Algorithm,
+    error::{HdError, Result},
+    node::{DerivationScheme, HdNode},
+    path::ChildIndex,
+};
+
+use crate::provider::{hmac_sha512, Provider};
+
 use std::path::Path;
-type HmacSha512 = Hmac<Sha512>;
+
+// use hmac::{Hmac, Mac};
+// use sha2::Sha512;
+// use std::path::Path;
+// type HmacSha512 = Hmac<Sha512>;
 
 
-
-struct Secp;
+pub(crate) struct Secp;
 impl Secp {
     fn public_key(private_key: &[u8]) -> Result<Vec<u8>> {
         let key: [u8; 32] = private_key
@@ -88,7 +100,7 @@ impl Provider for Secp {
 
 
 
-    fn write_private_pem(&self, n: &HdNode, p: &Path) -> Result<()> {
+    fn write_private(&self, n: &HdNode, p: &Path) -> Result<()> {
         std::fs::write(
             p,
             format!("{}\n", hex::encode(&n.private_key)),
@@ -97,7 +109,7 @@ impl Provider for Secp {
         Ok(())
     }
 
-    fn write_public_pem(&self, n: &HdNode, p: &Path) -> Result<()> {
+    fn write_public(&self, n: &HdNode, p: &Path) -> Result<()> {
         std::fs::write(
             p,
             format!("{}\n", hex::encode(&n.public_key)),

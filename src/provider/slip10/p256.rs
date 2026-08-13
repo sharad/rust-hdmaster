@@ -1,14 +1,18 @@
 
-
-
-use hmac::{Hmac, Mac};
-use sha2::Sha512;
+use crate::{
+    algorithm::Algorithm,
+    error::{HdError, Result},
+    node::{DerivationScheme, HdNode},
+    path::ChildIndex,
+};
 use std::path::Path;
-type HmacSha512 = Hmac<Sha512>;
+
+
+use crate::provider::{hmac_sha512, Provider};
 
 
 
-struct P256;
+pub(crate) struct P256;
 impl P256 {
     fn public_key(private_key: &[u8]) -> Result<Vec<u8>> {
         use p256::{
@@ -73,7 +77,7 @@ impl Provider for P256 {
     }
 
 
-    fn write_private_pem(&self, n: &HdNode, p: &Path) -> Result<()> {
+    fn write_private(&self, n: &HdNode, p: &Path) -> Result<()> {
         use pkcs8::EncodePrivateKey;
 
         let k = p256::SecretKey::from_slice(&n.private_key)
@@ -88,7 +92,7 @@ impl Provider for P256 {
         Ok(())
     }
 
-    fn write_public_pem(&self, n: &HdNode, p: &Path) -> Result<()> {
+    fn write_public(&self, n: &HdNode, p: &Path) -> Result<()> {
         use pkcs8::{EncodePublicKey, LineEnding};
 
         let k = p256::PublicKey::from_sec1_bytes(&n.public_key)

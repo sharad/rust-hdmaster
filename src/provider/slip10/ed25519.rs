@@ -1,11 +1,23 @@
 
-use hmac::{Hmac, Mac};
-use sha2::Sha512;
+// use hmac::{Hmac, Mac};
+// use sha2::Sha512;
+// use std::path::Path;
+// type HmacSha512 = Hmac<Sha512>;
+
+
+use crate::{
+    algorithm::Algorithm,
+    error::{HdError, Result},
+    node::{DerivationScheme, HdNode},
+    path::ChildIndex,
+};
 use std::path::Path;
-type HmacSha512 = Hmac<Sha512>;
+
+use crate::provider::{hmac_sha512, Provider};
 
 
-struct Ed25519;
+
+pub(crate) struct Ed25519;
 
 impl Ed25519 {
     fn public_key(private_key: &[u8]) -> Result<Vec<u8>> {
@@ -65,7 +77,7 @@ impl Provider for Ed25519 {
     }
 
 
-    fn write_private_pem(&self, n: &HdNode, p: &Path) -> Result<()> {
+    fn write_private(&self, n: &HdNode, p: &Path) -> Result<()> {
         use pkcs8::EncodePrivateKey;
 
         let a: [u8; 32] = n
@@ -85,7 +97,7 @@ impl Provider for Ed25519 {
         Ok(())
     }
 
-    fn write_public_pem(&self, n: &HdNode, p: &Path) -> Result<()> {
+    fn write_public(&self, n: &HdNode, p: &Path) -> Result<()> {
         use pkcs8::{EncodePublicKey, LineEnding};
 
         let a: [u8; 32] = n
