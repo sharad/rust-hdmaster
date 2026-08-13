@@ -1,3 +1,7 @@
+
+
+
+
 use crate::error::{HdError, Result};
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
@@ -30,6 +34,7 @@ impl ChildIndex {
         self.0
     }
 }
+
 impl FromStr for ChildIndex {
     type Err = HdError;
     fn from_str(s: &str) -> Result<Self> {
@@ -92,3 +97,6 @@ impl fmt::Display for DerivationPath {
         )
     }
 }
+
+
+

@@ -1,6 +1,14 @@
+
+
+
+
 use crate::error::{HdError, Result};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+
+
+
+
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Algorithm {
@@ -8,6 +16,7 @@ pub enum Algorithm {
     Ed25519,
     P256,
 }
+
 impl FromStr for Algorithm {
     type Err = HdError;
     fn from_str(s: &str) -> Result<Self> {

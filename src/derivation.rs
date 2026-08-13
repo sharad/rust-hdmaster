@@ -1,3 +1,9 @@
+
+
+
+
+
+
 use crate::{
     algorithm::Algorithm,
     error::Result,
@@ -9,9 +15,15 @@ use crate::{
 };
 use std::path::Path;
 
+
+
+
+
 pub struct NodeDeriver {
     registry: ProviderRegistry,
 }
+
+
 impl Default for NodeDeriver {
     fn default() -> Self {
         Self {
@@ -19,10 +31,15 @@ impl Default for NodeDeriver {
         }
     }
 }
+
+
+
 impl NodeDeriver {
+
     pub fn new(registry: ProviderRegistry) -> Self {
         Self { registry }
     }
+
     pub fn derive_from_seed(
         &self,
         seed: &MasterSeed,
@@ -37,6 +54,7 @@ impl NodeDeriver {
         }
         Ok(n)
     }
+
     pub fn derive_child_from_node(&self, parent: &HdNode, path: &DerivationPath) -> Result<HdNode> {
         let p = self.registry.get(parent.algorithm)?;
         let mut n = parent.clone();
@@ -45,6 +63,7 @@ impl NodeDeriver {
         }
         Ok(n)
     }
+
     pub fn derive_child_from_node_file(
         &self,
         file: &Path,
@@ -53,9 +72,11 @@ impl NodeDeriver {
         let n = load_node(file)?;
         self.derive_child_from_node(&n, path)
     }
+
     pub fn derive_child(&self, parent: &HdNode, index: ChildIndex) -> Result<HdNode> {
         self.derive_child_from_node(parent, &DerivationPath(vec![index]))
     }
+
     pub fn derive_child_from_file(&self, file: &Path, index: ChildIndex) -> Result<HdNode> {
         self.derive_child_from_node_file(file, &DerivationPath(vec![index]))
     }

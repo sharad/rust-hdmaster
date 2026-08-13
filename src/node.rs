@@ -1,6 +1,15 @@
+
+
+
+
+
 use crate::{algorithm::Algorithm, error::Result, key::KeyMaterial, path::ChildIndex};
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
+
+
+
+
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum DerivationScheme {
@@ -23,6 +32,7 @@ pub struct HdNode {
     pub private_key: [u8; 32],
     pub public_key: Vec<u8>,
 }
+
 impl std::fmt::Debug for HdNode {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("HdNode")
@@ -37,10 +47,13 @@ impl std::fmt::Debug for HdNode {
             .finish()
     }
 }
+
 impl HdNode {
+
     pub fn child(&self, index: ChildIndex) -> Result<Self> {
         crate::provider::derive_child(self, index)
     }
+
     pub fn key_material(&self) -> KeyMaterial {
         KeyMaterial {
             algorithm: self.algorithm,
@@ -49,3 +62,5 @@ impl HdNode {
         }
     }
 }
+
+

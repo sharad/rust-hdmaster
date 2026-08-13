@@ -1,12 +1,19 @@
+
+
 use crate::{error::Result, node::HdNode};
 use std::path::Path;
+
+
+
 pub fn save_node(n: &HdNode, p: &Path) -> Result<()> {
     std::fs::write(p, serde_json::to_vec_pretty(n)?)?;
     Ok(())
 }
+
 pub fn load_node(p: &Path) -> Result<HdNode> {
     Ok(serde_json::from_slice(&std::fs::read(p)?)?)
 }
+
 pub fn write_private_pem(n: &HdNode, p: &Path) -> Result<()> {
     use pkcs8::EncodePrivateKey;
     match n.algorithm {
@@ -36,6 +43,7 @@ pub fn write_private_pem(n: &HdNode, p: &Path) -> Result<()> {
     }
     Ok(())
 }
+
 pub fn write_public_pem(n: &HdNode, p: &Path) -> Result<()> {
     use pkcs8::{EncodePublicKey, LineEnding};
     match n.algorithm {
@@ -68,3 +76,5 @@ pub fn write_public_pem(n: &HdNode, p: &Path) -> Result<()> {
     }
     Ok(())
 }
+
+
