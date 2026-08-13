@@ -1,53 +1,53 @@
 
 
 
-use std::{
-    env,
-    path::PathBuf,
+use clap::Parser;
+
+use rust_hdmaster::fuse::{
+    backing::LocalBackingStore,
+    FillerGenerator,
+    HdFuse,
 };
 
-use fuser::MountOption;
-use rust_hdmaster::fuse::{
-    HdFuse,
-    LocalBackingStore,
-    PlaceholderVirtualFileProvider,
-};
+use std::path::PathBuf;
+
+#[derive(Parser, Debug)]
+struct Args {
+    #[arg(long)]
+    base: PathBuf,
+
+    #[arg(long)]
+    mount: PathBuf,
+}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let mut args =
-        env::args_os().skip(1);
+    let args = Args::parse();
 
-    let backing =
-        PathBuf::from(
-            args.next()
-                .expect("missing backing directory"),
-        );
+    let backing = LocalBackingStore::new(args.base);
 
-    let mountpoint =
-        PathBuf::from(
-            args.next()
-                .expect("missing mount point"),
-        );
+    let generator = FillerGenerator;
 
-    let runtime =
-        tokio::runtime::Runtime::new()?;
+    let runtime = tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()?;
 
-    let filesystem =
-        HdFuse::new(
-            LocalBackingStore::new(backing),
-            PlaceholderVirtualFileProvider,
-            runtime,
-        );
+    let filesystem = HdFuse::new(
+        backing,
+        generator,
+        runtime,
+    );
 
-    fuser::mount2(
+    let mut options = fuser::Config::default();
+
+    options.mount_options = vec![
+        fuser::MountOption::FSName("hdmaster".to_string()),
+        fuser::MountOption::AutoUnmount,
+    ];
+
+    fuser::mount(
         filesystem,
-        mountpoint,
-        &[
-            MountOption::FSName(
-                "hd-fuse".to_string(),
-            ),
-            MountOption::AutoUnmount,
-        ],
+        args.mount,
+        &options,
     )?;
 
     Ok(())

@@ -1,8 +1,5 @@
-
-
-
-pub mod registry;
 pub mod bip32;
+pub mod registry;
 pub mod slip10;
 
 pub use registry::{derive_child, ProviderRegistry};
@@ -20,9 +17,6 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-
-
-
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum Algorithm {
     Secp256k1,
@@ -38,10 +32,6 @@ pub type Variant = String;
 
 pub const VARIANT_STANDARD: &str = "standard";
 pub const VARIANT_BITCOIN: &str = "bitcoin";
-
-
-
-
 
 impl FromStr for Algorithm {
     type Err = HdError;
@@ -73,7 +63,6 @@ pub struct ProviderId {
     pub variant: Variant,
 }
 
-
 pub trait Provider: Send + Sync {
     fn id(&self) -> ProviderId;
     // fn algorithm(&self) -> Algorithm;
@@ -82,33 +71,16 @@ pub trait Provider: Send + Sync {
 
     fn master(&self, application: &str, seed: &[u8]) -> Result<HdNode>;
 
-    fn child(
-        &self,
-        parent: &HdNode,
-        index: ChildIndex,
-    ) -> Result<HdNode>;
+    fn child(&self, parent: &HdNode, index: ChildIndex) -> Result<HdNode>;
 
-    fn write_private(
-        &self,
-        node: &HdNode,
-        path: &Path,
-    ) -> Result<()>;
+    fn write_private(&self, node: &HdNode, path: &Path) -> Result<()>;
 
-    fn write_public(
-        &self,
-        node: &HdNode,
-        path: &Path,
-    ) -> Result<()>;
+    fn write_public(&self, node: &HdNode, path: &Path) -> Result<()>;
 }
 
-pub(crate) fn hmac_sha512(
-    k: &[u8],
-    d: &[u8],
-) -> Result<[u8; 64]> {
+pub(crate) fn hmac_sha512(k: &[u8], d: &[u8]) -> Result<[u8; 64]> {
     type HmacSha512 = Hmac<Sha512>;
-    let mut m =
-        HmacSha512::new_from_slice(k)
-            .map_err(|e| HdError::Crypto(e.to_string()))?;
+    let mut m = HmacSha512::new_from_slice(k).map_err(|e| HdError::Crypto(e.to_string()))?;
 
     m.update(d);
 

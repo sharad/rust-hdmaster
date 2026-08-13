@@ -1,5 +1,3 @@
-
-
 use crate::provider::{Algorithm, DerivationScheme};
 
 use crate::core::{
@@ -28,30 +26,16 @@ impl ProviderRegistry {
         }
     }
 
-    pub fn get(
-        &self,
-        algorithm: Algorithm,
-        scheme: DerivationScheme,
-    ) -> Result<&dyn Provider> {
+    pub fn get(&self, algorithm: Algorithm, scheme: DerivationScheme) -> Result<&dyn Provider> {
         self.providers
             .iter()
-            .find(|p| {
-                p.id().algorithm == algorithm &&
-                    p.id().scheme == scheme
-            })
+            .find(|p| p.id().algorithm == algorithm && p.id().scheme == scheme)
             .map(|p| p.as_ref())
-            .ok_or_else(|| {
-                HdError::UnsupportedAlgorithm(
-                    format!("{algorithm:?}/{scheme:?}")
-                )
-            })
+            .ok_or_else(|| HdError::UnsupportedAlgorithm(format!("{algorithm:?}/{scheme:?}")))
     }
 }
 
-pub fn derive_child(
-    p: &HdNode,
-    i: ChildIndex,
-) -> Result<HdNode> {
+pub fn derive_child(p: &HdNode, i: ChildIndex) -> Result<HdNode> {
     ProviderRegistry::standard()
         .get(p.provider.algorithm, p.provider.scheme)?
         .child(p, i)

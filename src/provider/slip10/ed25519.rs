@@ -1,4 +1,3 @@
-
 // use hmac::{Hmac, Mac};
 // use sha2::Sha512;
 // use std::path::Path;
@@ -15,8 +14,6 @@ use std::path::Path;
 
 use crate::provider::{hmac_sha512, Provider, VARIANT_STANDARD};
 
-
-
 pub(crate) struct Ed25519;
 
 impl Ed25519 {
@@ -25,12 +22,10 @@ impl Ed25519 {
             .try_into()
             .map_err(|_| HdError::InvalidPrivateKey)?;
 
-        Ok(
-            ed25519_dalek::SigningKey::from_bytes(&key)
-                .verifying_key()
-                .to_bytes()
-                .to_vec()
-        )
+        Ok(ed25519_dalek::SigningKey::from_bytes(&key)
+            .verifying_key()
+            .to_bytes()
+            .to_vec())
     }
 }
 impl Provider for Ed25519 {
@@ -41,7 +36,7 @@ impl Provider for Ed25519 {
             variant: VARIANT_STANDARD.into(),
         }
     }
-   fn supports_non_hardened(&self) -> bool {
+    fn supports_non_hardened(&self) -> bool {
         false
     }
     fn master(&self, a: &str, seed: &[u8]) -> Result<HdNode> {
@@ -75,7 +70,6 @@ impl Provider for Ed25519 {
         })
     }
 
-
     fn write_private(&self, n: &HdNode, p: &Path) -> Result<()> {
         use pkcs8::EncodePrivateKey;
 
@@ -105,8 +99,8 @@ impl Provider for Ed25519 {
             .try_into()
             .map_err(|_| HdError::InvalidPrivateKey)?;
 
-        let k = ed25519_dalek::VerifyingKey::from_bytes(&a)
-            .map_err(|_| HdError::InvalidPrivateKey)?;
+        let k =
+            ed25519_dalek::VerifyingKey::from_bytes(&a).map_err(|_| HdError::InvalidPrivateKey)?;
 
         let pem = k
             .to_public_key_pem(LineEnding::LF)
@@ -117,6 +111,3 @@ impl Provider for Ed25519 {
         Ok(())
     }
 }
-
-
-

@@ -1,5 +1,3 @@
-
-
 use crate::provider::{Algorithm, DerivationScheme, ProviderId};
 
 use crate::core::{
@@ -9,28 +7,16 @@ use crate::core::{
 };
 use std::path::Path;
 
-
 use crate::provider::{hmac_sha512, Provider, VARIANT_STANDARD};
-
-
 
 pub(crate) struct P256;
 impl P256 {
     fn public_key(private_key: &[u8]) -> Result<Vec<u8>> {
-        use p256::{
-            elliptic_curve::sec1::ToEncodedPoint,
-            SecretKey,
-        };
+        use p256::{elliptic_curve::sec1::ToEncodedPoint, SecretKey};
 
-        let sk = SecretKey::from_slice(private_key)
-            .map_err(|_| HdError::InvalidPrivateKey)?;
+        let sk = SecretKey::from_slice(private_key).map_err(|_| HdError::InvalidPrivateKey)?;
 
-        Ok(
-            sk.public_key()
-                .to_encoded_point(false)
-                .as_bytes()
-                .to_vec()
-        )
+        Ok(sk.public_key().to_encoded_point(false).as_bytes().to_vec())
     }
 }
 impl Provider for P256 {
@@ -77,12 +63,11 @@ impl Provider for P256 {
         })
     }
 
-
     fn write_private(&self, n: &HdNode, p: &Path) -> Result<()> {
         use pkcs8::EncodePrivateKey;
 
-        let k = p256::SecretKey::from_slice(&n.private_key)
-            .map_err(|_| HdError::InvalidPrivateKey)?;
+        let k =
+            p256::SecretKey::from_slice(&n.private_key).map_err(|_| HdError::InvalidPrivateKey)?;
 
         let pem = k
             .to_pkcs8_pem(pkcs8::LineEnding::LF)
@@ -108,4 +93,3 @@ impl Provider for P256 {
         Ok(())
     }
 }
-

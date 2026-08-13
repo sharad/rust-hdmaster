@@ -1,9 +1,5 @@
-
-
 use crate::ProviderId;
 use serde::{Deserialize, Serialize};
-
-
 
 // #[derive(Debug, Clone, Serialize, Deserialize)]
 
@@ -15,7 +11,6 @@ pub struct KeyMaterial {
     pub public_key: Vec<u8>,
 }
 
-
 impl std::fmt::Debug for KeyMaterial {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("KeyMaterial")
@@ -25,4 +20,3 @@ impl std::fmt::Debug for KeyMaterial {
             .finish()
     }
 }
-

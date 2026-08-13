@@ -1,7 +1,3 @@
-
-
-
-
 use crate::core::error::{HdError, Result};
 use serde::{Deserialize, Serialize};
 use std::{fmt, str::FromStr};
@@ -97,6 +93,3 @@ impl fmt::Display for DerivationPath {
         )
     }
 }
-
-
-

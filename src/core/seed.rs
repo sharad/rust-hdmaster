@@ -1,18 +1,9 @@
-
-
-
-
 use crate::core::error::{HdError, Result};
 use rand::RngCore;
 use zeroize::{Zeroize, ZeroizeOnDrop};
 
-
-
-
-
 #[derive(Clone, Zeroize, ZeroizeOnDrop)]
 pub struct MasterSeed(pub Vec<u8>);
-
 
 impl MasterSeed {
     pub fn random_32() -> Self {

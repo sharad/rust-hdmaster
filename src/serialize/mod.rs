@@ -1,11 +1,6 @@
-
-
 use crate::provider::ProviderRegistry;
 
-use crate::core::{
-    error::Result,
-    node::HdNode,
-};
+use crate::core::{error::Result, node::HdNode};
 use std::path::Path;
 
 pub fn save_node(n: &HdNode, p: &Path) -> Result<()> {
@@ -28,8 +23,3 @@ pub fn write_public_pem(n: &HdNode, p: &Path) -> Result<()> {
         .get(n.provider.algorithm, n.provider.scheme)?
         .write_public(n, p)
 }
-
-
-
-
-

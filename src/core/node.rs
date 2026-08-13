@@ -1,18 +1,7 @@
-
-
-
-
-use crate::provider::ProviderId;
 use crate::core::{error::Result, key::KeyMaterial, path::ChildIndex};
+use crate::provider::ProviderId;
 use serde::{Deserialize, Serialize};
 use zeroize::{Zeroize, ZeroizeOnDrop};
-
-
-
-
-
-
-
 
 #[derive(Clone, Serialize, Deserialize, Zeroize, ZeroizeOnDrop)]
 pub struct HdNode {
@@ -44,7 +33,6 @@ impl std::fmt::Debug for HdNode {
 }
 
 impl HdNode {
-
     pub fn child(&self, index: ChildIndex) -> Result<Self> {
         crate::provider::derive_child(self, index)
     }
@@ -57,5 +45,3 @@ impl HdNode {
         }
     }
 }
-
-

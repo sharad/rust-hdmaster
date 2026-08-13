@@ -31,6 +31,8 @@ tokio = { version = "1", features = [
     "macros",
     "fs",
     "sync",
+    "io-util",
 ] }
 async-trait = "0.1"
 libc = "0.2"
+

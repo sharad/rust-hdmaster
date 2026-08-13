@@ -1,7 +1,3 @@
-
-
-
-
 use crate::provider::{Algorithm, DerivationScheme, ProviderRegistry};
 use crate::serialize::load_node;
 
@@ -14,14 +10,9 @@ use crate::core::{
 };
 use std::path::Path;
 
-
-
-
-
 pub struct NodeDeriver {
     registry: ProviderRegistry,
 }
-
 
 impl Default for NodeDeriver {
     fn default() -> Self {
@@ -31,10 +22,7 @@ impl Default for NodeDeriver {
     }
 }
 
-
-
 impl NodeDeriver {
-
     pub fn new(registry: ProviderRegistry) -> Self {
         Self { registry }
     }
@@ -57,8 +45,9 @@ impl NodeDeriver {
     }
 
     pub fn derive_child_from_node(&self, parent: &HdNode, path: &DerivationPath) -> Result<HdNode> {
-        let p = self.registry.get(parent.provider.algorithm,
-                                  parent.provider.scheme)?;
+        let p = self
+            .registry
+            .get(parent.provider.algorithm, parent.provider.scheme)?;
         let mut n = parent.clone();
         for i in &path.0 {
             n = p.child(&n, *i)?
