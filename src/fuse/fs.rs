@@ -48,6 +48,7 @@ const GENERATION: Generation = Generation(0);
 pub trait VirtualGenerator: Send + Sync {
     fn generate(&self, path: &Path, file: VirtualFile) -> Result<Vec<u8>>;
 }
+
 pub struct FillerGenerator;
 impl VirtualGenerator for FillerGenerator {
     fn generate(&self, path: &Path, file: VirtualFile) -> Result<Vec<u8>> {
@@ -181,6 +182,7 @@ where
         VirtualFile::from_name(path.file_name()?)
     }
 }
+
 impl<B, G> Filesystem for HdFuse<B, G>
 where
     B: BackingStore + 'static,
